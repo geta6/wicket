@@ -1,0 +1,8 @@
+extends layout
+block content
+  div list
+  ul
+  each key,value in articles
+    - path = decodeURIComponent(key.split(encodeURIComponent(locals.wiki+"/"))[1])
+    li
+      a(href='/'+locals.wiki+'/'+path)= path

@@ -1,21 +1,3 @@
-doctype 5
-html
-  head
-    title= title
-    !=css('style')
-
-  body
-
-
-    .container
-      div#wiki-wrap
-        textarea#wiki-body
-        span: textarea#wiki-edit
-
-    script(src='/socket.io/socket.io.js')
-    script(src='/lib/jquery-1.9.1.min.js')
-    script(src='/lib/underscore-min.js')
-    script(src='/lib/caretposition.js')
-    !=js('lib/ime')
-    !=js('lib/adj')
-    !=js('wicket')
+extends layout
+block content
+  div index

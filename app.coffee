@@ -22,12 +22,14 @@ app.use app.router
 app.use express.static path.resolve 'public'
 app.use express.errorHandler()
 
+# database
+
+db = (require 'redis').createClient()
 
 # route
 
-app.get '/', (req, res) ->
-  res.render 'index', title: 'hoge'
-
+routes = require './routes'
+routes(app,db)
 
 # server
 
@@ -41,6 +43,25 @@ server.listen (app.get 'port'), ->
 io = (require 'socket.io').listen server
 
 io.sockets.on 'connection', (socket) ->
+
+  socket.on "join", (data) ->
+    if data.wiki
+      socket.join data.wiki
+      socket.set "wiki",data.wiki
+    if data.article
+      socket.join data.article
+      socket.set "article", data.article
+
   socket.on 'sync', (data) ->
-    data = _.extend data, id: socket.id
-    socket.broadcast.emit 'sync', data
+    socket.get "article", (err,article) ->
+      if article
+        data = _.extend data, id: socket.id
+        socket.broadcast.to(article).emit 'sync',data
+
+  socket.on 'save', (data) ->
+    #タイムスタンプを基準にしたソート済みセットに格納
+    date = new Date().getTime().toFixed()
+    #console.log "key:"+data.key
+    db.zadd data.key,date,data.val, (err,res) ->
+      #console.log res
+
