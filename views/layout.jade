@@ -1,0 +1,21 @@
+!!! 5
+html
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='Content-Script-Type', content='text/javascript')
+    title
+    !=css('style')
+
+  body
+
+    block content
+
+    script(src='/socket.io/socket.io.js')
+    script(src='/lib/jquery-1.9.1.min.js')
+    script(src='/lib/underscore-min.js')
+    script(src='/lib/caretposition.js')
+    !=js('lib/ime')
+    !=js('lib/adj')
+    !=js('wicket')
+
+| </html>

@@ -1,0 +1,8 @@
+extends layout
+block content
+  div list
+  ul
+  each key,value in articles
+    - article_name = decodeURIComponent(key.split(encodeURIComponent(locals.wiki+"/"))[1])
+    li(id=article_name)
+      a(href='/'+locals.wiki+'/'+article_name)= article_name
