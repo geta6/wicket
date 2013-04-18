@@ -44,19 +44,25 @@ io = (require 'socket.io').listen server
 
 io.sockets.on 'connection', (socket) ->
 
-  socket.on "join", (data) ->
-    if data.wiki
-      socket.join data.wiki
-      socket.set "wiki",data.wiki
-    if data.article
-      socket.join data.article
-      socket.set "article", data.article
+  socket.on "join", (uri) ->
+    if uri.wiki
+      socket.join uri.wiki
+      socket.set "wiki",uri.wiki
+    if uri.path
+      socket.join uri.path
+      socket.set "path", uri.path
 
   socket.on 'sync', (data) ->
-    socket.get "article", (err,article) ->
-      if article
-        data = _.extend data, id: socket.id
-        socket.broadcast.to(article).emit 'sync',data
+    socket.get "wiki", (err,wiki) ->
+      socket.get "path", (err,path) ->
+        #同じwiki内でページリストを参照しているsocketにemit
+        if wiki && path is null
+          socket.broadcast.to(wiki).emit 'update',data
+        # 同じpathに居る場合、Sync
+        else if path
+          data = _.extend data, id: socket.id
+          socket.broadcast.to(path).emit 'sync',data
+
 
   socket.on 'save', (data) ->
     #タイムスタンプを基準にしたソート済みセットに格納

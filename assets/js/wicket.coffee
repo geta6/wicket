@@ -11,11 +11,9 @@ window.wiki.helper.resize = ($el) ->
   return $el.css width: "#{width}px"
 
 window.wiki.helper.location = ->
-  uri = window.location.pathname.split "/"
   res = {}
-  res.wiki = uri[1]
-  res.article = uri.slice(2).join("/")
-  console.log res.article
+  res.path = window.location.pathname
+  res.wiki = (res.path.split "/")[1]
   return res
 
 $ ->
@@ -32,19 +30,19 @@ $ ->
 
   others = {}
 
-  path = wiki.helper.location()
+  uri = wiki.helper.location()
 
   socket = io.connect 'http://localhost:3000'
 
   #ルーティングによりeventlistnerを設定
   #Backbone.jsとか使ったほうが良いんでしょうか？
 
-  if path.wiki #ページリスト内
+  if uri.wiki #ページリスト内
     socket.emit 'join',
-      wiki: path.wiki
-      article: path.article
+      wiki: uri.wiki
+      path: uri.path
 
-    if path.article #編集可能領域内
+    if uri.path #編集可能領域内
       libime = new wiki.libIme $elEdit
       libadj = new wiki.libAdj $elBody
       update = (sync = yes, code = null) ->
