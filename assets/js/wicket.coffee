@@ -14,6 +14,7 @@ window.wiki.helper.location = ->
   res = {}
   res.path = window.location.pathname
   res.wiki = (res.path.split "/")[1]
+  res.article = (res.path.split "/").slice(2).join("/")
   return res
 
 $ ->
@@ -38,11 +39,16 @@ $ ->
   #Backbone.jsとか使ったほうが良いんでしょうか？
 
   if uri.wiki #ページリスト内
+    #最初にroomにjoinさせる
     socket.emit 'join',
       wiki: uri.wiki
       path: uri.path
 
-    if uri.path #編集可能領域内
+    #同wikiでページの編集が行われた場合
+    socket.on 'update',(data)->
+      $('li#'+data.article).append(":updated").fadeOut().fadeIn()#てきとう
+
+    if uri.article #編集可能領域内
       libime = new wiki.libIme $elEdit
       libadj = new wiki.libAdj $elBody
       update = (sync = yes, code = null) ->
@@ -79,6 +85,7 @@ $ ->
             code: code
             pos: Measurement.caretPos $elBody
             val: val
+            article: uri.article
         # console.log caret, line, cols
           # save db
           # 毎ストロークdbに保存するのは結構ヘビーなのでいいタイミングが欲しい

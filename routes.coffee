@@ -12,7 +12,6 @@ module.exports = (app,db) ->
 
    #  ページ一覧
   app.get '/:wiki', (req, res)->
-    console.log "dbkey:"+encodeURIComponent(req.params.wiki+"/")
     db.keys encodeURIComponent(req.params.wiki+"/")+'*', (err, reply) ->
       reply = "" unless reply
       res.render "list", { wiki: req.params.wiki, articles:reply }
@@ -20,7 +19,6 @@ module.exports = (app,db) ->
   #  記事
   app.get '/:wiki/*', (req, res) ->
     param = encode_params(req)
-    console.log "param:"+param.key
     #とりあえずタイムスタンプの一番新しいモノだけ取得
     db.zrevrange param.key,0,0, (err,members) ->
       if members is undefined
